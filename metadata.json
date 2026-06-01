@@ -1,0 +1,6 @@
+{
+  "name": "Blade Runner",
+  "description": "Explore the legendary cyberpunk universe of Ridley Scott's 1982 masterpiece Blade Runner. Experience the ESPER actor analysis tool, test yourself with the interactive Gemini-powered Voight-Kampff test, compare the movie with Philip K. Dick's novel, and discover production secrets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

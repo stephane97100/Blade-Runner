@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "ContactSubmission": {
+      "title": "ContactSubmission",
+      "description": "Formulaire de contact envoyé depuis le site Blade Runner",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "VoightKampffSession": {
+      "title": "VoightKampffSession",
+      "description": "Session d'un test de Voight-Kampff par un utilisateur",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "answers": { "type": "array" },
+        "verdict": { "type": "string" },
+        "analysis": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["answers", "verdict", "analysis", "createdAt"]
+    }
+  },
+  "firestore": {
+    "contact_submissions/{submissionId}": {
+      "schema": "ContactSubmission",
+      "description": "Stocke les soumissions de contact"
+    },
+    "vk_sessions/{sessionId}": {
+      "schema": "VoightKampffSession",
+      "description": "Stocke les résultats de test de Voight-Kampff"
+    }
+  }
+}
