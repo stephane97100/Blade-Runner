@@ -1,7 +1,7 @@
 import { AnimatePresence } from "motion/react";
-import { Eye, Film, Layers, BookOpen, Settings, Send, Users, Menu, X, Shield, HelpCircle, FastForward } from "lucide-react";
+import { Eye, Film, Layers, BookOpen, Settings, Send, Users, Menu, X, Shield, HelpCircle, FastForward, Image } from "lucide-react";
 
-export type NavTab = "film" | "versions" | "book" | "makingof" | "actors" | "devenus" | "suite" | "contact" | "vk";
+export type NavTab = "film" | "galerie" | "versions" | "book" | "makingof" | "actors" | "devenus" | "suite" | "contact" | "vk";
 
 interface NavigationProps {
   currentTab: NavTab;
@@ -13,6 +13,7 @@ interface NavigationProps {
 export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOpen }: NavigationProps) {
   const tabs = [
     { id: "film", label: "Le Film", icon: <Film className="h-4 w-4" /> },
+    { id: "galerie", label: "Galerie d'Art", icon: <Image className="h-4 w-4" /> },
     { id: "versions", label: "Les Versions", icon: <Layers className="h-4 w-4" /> },
     { id: "book", label: "Livre vs Film", icon: <BookOpen className="h-4 w-4" /> },
     { id: "makingof", label: "Le Tournage", icon: <Settings className="h-4 w-4" /> },

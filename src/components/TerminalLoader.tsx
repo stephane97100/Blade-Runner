@@ -12,6 +12,9 @@ export default function TerminalLoader({ onComplete, targetDataName }: TerminalL
   const [logs, setLogs] = useState<string[]>([]);
   const logsEndRef = useRef<HTMLDivElement | null>(null);
 
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
   const rawLogs = [
     "LOG: SYSTEM INGRESS DETECTED FROM IP 10.201.92.83",
     "SYS: INITIALIZING LAPD MAINFRAME CONNECTION SECURE v8.1",
@@ -81,13 +84,13 @@ export default function TerminalLoader({ onComplete, targetDataName }: TerminalL
       if (elapsed >= duration) {
         clearInterval(timer);
         setTimeout(() => {
-          onComplete();
+          onCompleteRef.current();
         }, 300);
       }
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [onComplete]);
+  }, []);
 
   // Scroll to bottom when logs are updated
   useEffect(() => {

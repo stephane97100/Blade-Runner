@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { AnimatePresence } from "motion/react";
 import Navigation, { NavTab } from "./components/Navigation";
 import FilmView from "./components/FilmView";
+import GalleryView from "./components/GalleryView";
 import VersionsView from "./components/VersionsView";
 import BookVsMovieView from "./components/BookVsMovieView";
 import MakingOfView from "./components/MakingOfView";
@@ -213,6 +214,8 @@ export default function App() {
     switch (currentTab) {
       case "film":
         return <FilmView />;
+      case "galerie":
+        return <GalleryView />;
       case "versions":
         return <VersionsView />;
       case "book":
