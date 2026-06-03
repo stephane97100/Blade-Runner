@@ -11,6 +11,7 @@ export default function VoightKampffView() {
   const [heartRate, setHeartRate] = useState(72);      // bpm
   const [testPhase, setTestPhase] = useState<"intro" | "testing" | "analyzing" | "result">("intro");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
   const [verdict, setVerdict] = useState<"HUMAIN" | "REPLICANT" | null>(null);
   const [analysisText, setAnalysisText] = useState("");
   const [scanProgress, setScanProgress] = useState(0);
@@ -204,7 +205,23 @@ export default function VoightKampffView() {
     setVerdict(data.verdict);
     setAnalysisText(data.analysis);
     setTestPhase("result");
-    beep(data.verdict === "HUMAIN" ? 660 : 220, "sawtooth", 0.4);
+    setIsRevealing(true);
+    
+    // Dispatch global window event to update DiagnosticConsole index in real-time
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("vk-test-completed"));
+    }
+    
+    // Series of futuristic biometric locking tones
+    beep(520, "sine", 0.08);
+    setTimeout(() => beep(620, "sine", 0.08), 120);
+    setTimeout(() => beep(720, "sine", 0.15), 240);
+    
+    // Hold reveal screen for 2.2 seconds for dramatic retro suspense
+    setTimeout(() => {
+      beep(data.verdict === "HUMAIN" ? 885 : 165, "sawtooth", 0.45);
+      setIsRevealing(false);
+    }, 2200);
   };
 
   const resetAll = () => {
@@ -465,68 +482,143 @@ export default function VoightKampffView() {
 
             {/* Phase 4: Display Results Case and Narrative */}
             {testPhase === "result" && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
-              >
-                {/* Visual verdict block */}
-                <div className={`p-5 rounded-lg border text-center relative overflow-hidden ${
-                  verdict === "REPLICANT"
-                    ? "bg-red-950/30 border-red-500/40 text-red-100 shadow-[0_0_20px_rgba(239,68,68,0.15)]"
-                    : "bg-emerald-950/30 border-emerald-500/40 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
-                }`}>
-                  <div className="absolute top-2 right-2 text-[9px] font-mono text-gray-500 tracking-widest">
-                    CODE IDENTIFICATEUR LAPD
-                  </div>
-                  
-                  {verdict === "REPLICANT" ? (
-                    <div className="space-y-1">
-                      <ShieldAlert className="h-8 w-8 text-red-500 mx-auto" />
-                      <h3 className="text-xl md:text-2xl font-display font-black tracking-widest uppercase">
-                        VERDICT : REPLICANT NEXUS-6
-                      </h3>
-                      <p className="text-[10px] font-mono tracking-wide text-red-400">
-                        EMPATHIE INSUFFISANTE • INSTRUCTION EXÉCUTIVE : RETRAIT IMMÉDIAT RECOMMANDÉ
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <BadgeCheck className="h-8 w-8 text-emerald-500 mx-auto" />
-                      <h3 className="text-xl md:text-2xl font-display font-black tracking-widest uppercase">
-                        VERDICT : CLASSE HUMAINE
-                      </h3>
-                      <p className="text-[10px] font-mono tracking-wide text-emerald-400">
-                        EMPATHIE CORRECTE EXPÉRIMENTÉE • UNITÉ BIOLOGIQUE AUTILISÉE ET LIBRE
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Narrative Diagnostic Typewriter Block */}
-                <div className="space-y-2">
-                  <span className="text-[9px] uppercase font-mono tracking-widest text-gray-400 block border-b border-gray-800 pb-1">
-                    RAPPORT OFFICIEL DE SÉANCE D'INTERROGATOIRE :
-                  </span>
-                  
-                  {/* Typewriter feedback block */}
-                  <div className="bg-black/60 border border-gray-800 rounded-lg p-5 font-mono text-xs text-gray-300 leading-relaxed max-h-[220px] overflow-y-auto whitespace-pre-line custom-scrollbar">
-                    {analysisText}
-                  </div>
-                </div>
-
-                {/* Reset button Action */}
-                <div className="pt-2 flex justify-end">
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-800 hover:bg-gray-700 text-white font-mono text-xs uppercase tracking-widest px-4 py-2.5 rounded border border-gray-700 flex items-center space-x-2 cursor-pointer transition-colors"
+              <AnimatePresence mode="wait">
+                {isRevealing ? (
+                  <motion.div
+                    key="revealing-animation"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.04 }}
+                    transition={{ duration: 0.25 }}
+                    className={`flex flex-col justify-center items-center h-full min-h-[350px] py-10 px-6 rounded-xl border text-center relative overflow-hidden ${
+                      verdict === "REPLICANT"
+                        ? "bg-red-950/20 border-red-500/40 shadow-[0_0_30px_rgba(239,68,68,0.15)]"
+                        : "bg-emerald-950/15 border-emerald-500/45 shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+                    }`}
                   >
-                    <RefreshCw className="h-3.5 w-3.5" />
-                    <span>SYNCHRONISER NOUVEAU SUJET</span>
-                  </button>
-                </div>
-              </motion.div>
+                    {/* Animated laser scan lines sweep */}
+                    <motion.div
+                      animate={{
+                        top: ["0%", "100%", "0%"]
+                      }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.1,
+                        ease: "linear"
+                      }}
+                      className={`absolute left-0 right-0 h-[3px] z-30 opacity-80 shadow-[0_0_12px_rgba(255,255,255,1)] ${
+                        verdict === "REPLICANT"
+                          ? "bg-red-500 shadow-red-500/85"
+                          : "bg-emerald-400 shadow-emerald-400/85"
+                      }`}
+                    />
+
+                    {/* Zebra security pattern overlay */}
+                    <div className="absolute inset-0 bg-zebra-pattern opacity-5 pointer-events-none" />
+
+                    {/* Pulsing biometrics feedback */}
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        borderColor: verdict === "REPLICANT" ? ["rgba(239, 68, 68, 0.2)", "rgba(239, 68, 68, 0.8)", "rgba(239, 68, 68, 0.2)"] : ["rgba(16, 185, 129, 0.2)", "rgba(16, 185, 129, 0.8)", "rgba(16, 185, 129, 0.2)"]
+                      }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 0.8,
+                        ease: "easeInOut"
+                      }}
+                      className={`w-16 h-16 rounded-full border-2 flex items-center justify-center mb-4 ${
+                        verdict === "REPLICANT"
+                          ? "bg-red-950/40 text-red-400"
+                          : "bg-emerald-950/40 text-emerald-400"
+                      }`}
+                    >
+                      <Activity className="h-8 w-8 animate-pulse" />
+                    </motion.div>
+
+                    <div className="space-y-3 text-center relative z-10 max-w-sm">
+                      <h4 className={`text-sm font-mono font-black uppercase tracking-widest ${
+                        verdict === "REPLICANT" ? "text-red-400 animate-pulse" : "text-emerald-400 animate-pulse"
+                      }`}>
+                        {verdict === "REPLICANT" ? "⚠️ MENACE DE CLASSE 6 DÉTECTÉE // NEXUS INTRUSION" : "✓ HOMEOSTASIE EMBRYONNAIRE CONFORME // HUMAIN"}
+                      </h4>
+                      <p className="text-[10px] font-mono text-gray-400 leading-relaxed uppercase">
+                        TRANSMISSION SÉCURISÉE VERS LE CAPTURE FLUX CENTRAL DU LAPD... VEUILLEZ PATIENTER PENDANT LA FINALISATION...
+                      </p>
+                    </div>
+
+                    {/* Live retro tracking codes ticker under */}
+                    <div className="mt-5 font-mono text-[8px] text-gray-500 flex space-x-4 uppercase border border-gray-850 bg-gray-950/80 p-1.5 px-3 rounded">
+                      <span className="animate-pulse">IP: 10.201.92.83</span>
+                      <span className="text-red-500/80">LOCK: {Math.random().toString(36).substring(2, 8).toUpperCase()}</span>
+                      <span className="text-cyan-400">CHRONO: SEC-APPROVED</span>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="result"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    {/* Visual verdict block */}
+                    <div className={`p-5 rounded-lg border text-center relative overflow-hidden ${
+                      verdict === "REPLICANT"
+                        ? "bg-red-950/30 border-red-500/40 text-red-100 shadow-[0_0_20px_rgba(239,68,68,0.15)]"
+                        : "bg-emerald-950/30 border-emerald-500/40 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
+                    }`}>
+                      <div className="absolute top-2 right-2 text-[9px] font-mono text-gray-500 tracking-widest">
+                        CODE IDENTIFICATEUR LAPD
+                      </div>
+                      
+                      {verdict === "REPLICANT" ? (
+                        <div className="space-y-1">
+                          <ShieldAlert className="h-8 w-8 text-red-500 mx-auto" />
+                          <h3 className="text-xl md:text-2xl font-display font-black tracking-widest uppercase">
+                            VERDICT : REPLICANT NEXUS-6
+                          </h3>
+                          <p className="text-[10px] font-mono tracking-wide text-red-400">
+                            EMPATHIE INSUFFISANTE • INSTRUCTION EXÉCUTIVE : RETRAIT IMMÉDIAT RECOMMANDÉ
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <BadgeCheck className="h-8 w-8 text-emerald-500 mx-auto" />
+                          <h3 className="text-xl md:text-2xl font-display font-black tracking-widest uppercase">
+                            VERDICT : CLASSE HUMAINE
+                          </h3>
+                          <p className="text-[10px] font-mono tracking-wide text-emerald-400">
+                            EMPATHIE CORRECTE EXPÉRIMENTÉE • UNITÉ BIOLOGIQUE AUTILISÉE ET LIBRE
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Narrative Diagnostic Typewriter Block */}
+                    <div className="space-y-2">
+                      <span className="text-[9px] uppercase font-mono tracking-widest text-gray-400 block border-b border-gray-800 pb-1">
+                        RAPPORT OFFICIEL DE SÉANCE D'INTERROGATOIRE :
+                      </span>
+                      
+                      {/* Typewriter feedback block */}
+                      <div className="bg-black/60 border border-gray-800 rounded-lg p-5 font-mono text-xs text-gray-300 leading-relaxed max-h-[220px] overflow-y-auto whitespace-pre-line custom-scrollbar">
+                        {analysisText}
+                      </div>
+                    </div>
+
+                    {/* Reset button Action */}
+                    <div className="pt-2 flex justify-end">
+                      <button
+                        onClick={resetAll}
+                        className="bg-gray-800 hover:bg-gray-700 text-white font-mono text-xs uppercase tracking-widest px-4 py-2.5 rounded border border-gray-700 flex items-center space-x-2 cursor-pointer transition-colors"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        <span>SYNCHRONISER NOUVEAU SUJET</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             )}
 
           </AnimatePresence>

@@ -1,7 +1,8 @@
 import { AnimatePresence } from "motion/react";
-import { Eye, Film, Layers, BookOpen, Settings, Send, Users, Menu, X, Shield, HelpCircle, FastForward, Image } from "lucide-react";
+import { Eye, Film, Layers, BookOpen, Settings, Send, Users, Menu, X, Shield, HelpCircle, FastForward, Image, Newspaper, Gamepad2, Compass, Lock, Github } from "lucide-react";
+import WeatherWidget from "./WeatherWidget";
 
-export type NavTab = "film" | "galerie" | "versions" | "book" | "makingof" | "actors" | "devenus" | "suite" | "contact" | "vk";
+export type NavTab = "film" | "galerie" | "versions" | "book" | "makingof" | "actors" | "devenus" | "suite" | "contact" | "vk" | "westwood" | "vehicules" | "actualites" | "admin";
 
 interface NavigationProps {
   currentTab: NavTab;
@@ -14,20 +15,24 @@ export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOp
   const tabs = [
     { id: "film", label: "Le Film", icon: <Film className="h-4 w-4" /> },
     { id: "galerie", label: "Galerie d'Art", icon: <Image className="h-4 w-4" /> },
+    { id: "vehicules", label: "Véhicules", icon: <Compass className="h-4 w-4" /> },
     { id: "versions", label: "Les Versions", icon: <Layers className="h-4 w-4" /> },
     { id: "book", label: "Livre vs Film", icon: <BookOpen className="h-4 w-4" /> },
     { id: "makingof", label: "Le Tournage", icon: <Settings className="h-4 w-4" /> },
     { id: "actors", label: "Les Acteurs", icon: <Users className="h-4 w-4" /> },
     { id: "devenus", label: "Que sont-ils devenus ?", icon: <HelpCircle className="h-4 w-4" /> },
     { id: "suite", label: "La Suite", icon: <FastForward className="h-4 w-4" /> },
+    { id: "westwood", label: "Le Jeu Westwood", icon: <Gamepad2 className="h-4 w-4" /> },
+    { id: "actualites", label: "Actualités", icon: <Newspaper className="h-4 w-4" /> },
     { id: "contact", label: "Dépôt de Contact", icon: <Send className="h-4 w-4" /> },
-    { id: "vk", label: "Test Voight-Kampff", icon: <Eye className="h-4 w-4" /> }
+    { id: "vk", label: "Test Voight-Kampff", icon: <Eye className="h-4 w-4" /> },
+    { id: "admin", label: "Console Administrateur", icon: <Lock className="h-4 w-4" /> }
   ] as const;
 
   return (
     <>
       {/* Laptop / Desktop HUD Side-board Rail (hidden on mobile) */}
-      <aside className="hidden lg:flex flex-col w-64 bg-gray-950/70 border-r border-cyan-500/10 backdrop-blur-md p-6 h-[calc(100vh-4rem)] sticky top-16 space-y-8 select-none shrink-0">
+      <aside className="hidden lg:flex flex-col w-64 bg-gray-950/70 border-r border-cyan-500/10 backdrop-blur-md p-6 h-[calc(100vh-4rem)] sticky top-16 space-y-6 select-none shrink-0 overflow-y-auto scrollbar-none">
         
         {/* Connection status stamp */}
         <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-lg p-3 space-y-1.5 flicker-effect">
@@ -37,6 +42,9 @@ export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOp
           </div>
           <span className="block text-[9px] font-mono text-gray-500 uppercase">SYS_PORT: 3000 // LAPD_ROOT</span>
         </div>
+
+        {/* Real-time Dystopian Weather widget */}
+        <WeatherWidget />
 
         {/* List of Navigation shortcuts */}
         <div className="space-y-1">
@@ -72,10 +80,19 @@ export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOp
         </div>
 
         {/* Small trademark license label */}
-        <div className="text-[9px] font-mono text-gray-600 space-y-0.5 mt-auto pt-4 border-t border-gray-900 leading-normal uppercase">
+        <div className="text-[9px] font-mono text-gray-600 mt-auto pt-4 border-t border-gray-900 leading-normal uppercase">
           <p>© BLADE RUNNER // 1982</p>
           <p>DIR: RIDLEY SCOTT</p>
           <p>SYS DATA TRANSIT PROTECT</p>
+          <a
+            href="https://github.com/steeve97113/blade-runner-world"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center space-x-1 mt-2.5 text-[8.5px] font-mono text-cyan-400 hover:text-cyan-300 font-bold tracking-wider transition-all cursor-pointer uppercase select-none"
+          >
+            <Github className="h-3 w-3" />
+            <span>[ SOURCE GITHUB ]</span>
+          </a>
         </div>
       </aside>
 
@@ -101,7 +118,7 @@ export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOp
             </div>
 
             {/* List links */}
-            <nav className="space-y-3.5 max-w-xs mx-auto w-full">
+            <nav className="space-y-3.5 max-w-xs mx-auto w-full mb-4">
               {tabs.map((tab) => {
                 const active = tab.id === currentTab;
                 return (
@@ -125,6 +142,18 @@ export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOp
                 );
               })}
             </nav>
+
+            <div className="text-center mt-2 pb-6">
+              <a
+                href="https://github.com/steeve97113/blade-runner-world"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-1.5 text-[9px] font-mono text-cyan-400 hover:text-cyan-300 transition-colors uppercase font-bold tracking-widest"
+              >
+                <Github className="h-3 w-3" />
+                <span>[ SOURCE CODE GITHUB ]</span>
+              </a>
+            </div>
           </div>
         )}
       </AnimatePresence>

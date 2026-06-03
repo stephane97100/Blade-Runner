@@ -25,6 +25,39 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["answers", "verdict", "analysis", "createdAt"]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Art conceptuel éditable de Syd Mead",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "medium": { "type": "string" },
+        "artist": { "type": "string" },
+        "date": { "type": "string" },
+        "catalogId": { "type": "string" },
+        "description": { "type": "string" },
+        "technicalSpec": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["id", "title", "category", "medium", "artist", "date", "catalogId", "description", "technicalSpec", "imageUrl"]
+    },
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "Spécifications d'un véhicule éditables",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "lore": { "type": "string" },
+        "visualUrl": { "type": "string" },
+        "specs": { "type": "object" }
+      },
+      "required": ["id", "name", "category", "description", "lore", "visualUrl", "specs"]
     }
   },
   "firestore": {
@@ -35,6 +68,14 @@
     "vk_sessions/{sessionId}": {
       "schema": "VoightKampffSession",
       "description": "Stocke les résultats de test de Voight-Kampff"
+    },
+    "gallery_items/{itemId}": {
+      "schema": "GalleryItem",
+      "description": "Art de la galerie de photos"
+    },
+    "vehicles/{vehicleId}": {
+      "schema": "Vehicle",
+      "description": "Spécifications de véhicules"
     }
   }
 }

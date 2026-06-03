@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Navigation, { NavTab } from "./components/Navigation";
 import FilmView from "./components/FilmView";
 import GalleryView from "./components/GalleryView";
@@ -11,7 +11,11 @@ import ContactView from "./components/ContactView";
 import VoightKampffView from "./components/VoightKampffView";
 import DevenusView from "./components/DevenusView";
 import SuiteView from "./components/SuiteView";
+import NewsView from "./components/NewsView";
+import VehiclesView from "./components/VehiclesView";
+import WestwoodView from "./components/WestwoodView";
 import DiagnosticConsole from "./components/DiagnosticConsole";
+import AdminView from "./components/AdminView";
 import { Eye, Shield, Radio, Menu, Clock, Volume2, VolumeX, Music, SlidersHorizontal } from "lucide-react";
 
 export type FilterPreset = "standard" | "sepia" | "cyberpunk" | "vintage";
@@ -228,10 +232,18 @@ export default function App() {
         return <DevenusView />;
       case "suite":
         return <SuiteView />;
+      case "vehicules":
+        return <VehiclesView />;
+      case "westwood":
+        return <WestwoodView />;
+      case "actualites":
+        return <NewsView />;
       case "contact":
         return <ContactView />;
       case "vk":
         return <VoightKampffView />;
+      case "admin":
+        return <AdminView />;
       default:
         return <FilmView />;
     }
@@ -351,9 +363,16 @@ export default function App() {
         <main className="flex-grow p-6 md:p-8 lg:p-10 overflow-x-hidden min-w-0 flex flex-col justify-between space-y-6">
           <div className="flex-grow">
             <AnimatePresence mode="wait">
-              <div key={currentTab} className="h-full">
+              <motion.div
+                key={currentTab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
+                className="h-full"
+              >
                 {renderContent()}
-              </div>
+              </motion.div>
             </AnimatePresence>
           </div>
 

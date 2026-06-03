@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Grid, Eye, Maximize2, X, RotateCcw, Image, Tag, HardDrive, ShieldAlert, Sparkles, SlidersHorizontal, ArrowUpRight } from "lucide-react";
 import TerminalLoader from "./TerminalLoader";
@@ -20,6 +20,18 @@ export default function GalleryView() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<"all" | "vaisseaux" | "villes" | "personnages">("all");
   const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
+  const [items, setItems] = useState<GalleryItem[]>([]);
+
+  useEffect(() => {
+    fetch("/api/gallery")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.items) {
+          setItems(data.items);
+        }
+      })
+      .catch(err => console.error("Error loading gallery items:", err));
+  }, []);
 
   // Interface Beep Synchronized
   const playBeep = (freq: number) => {
@@ -194,8 +206,8 @@ export default function GalleryView() {
   ];
 
   const filteredItems = selectedCategory === "all"
-    ? galleryList
-    : galleryList.filter(item => item.category === selectedCategory);
+    ? items
+    : items.filter(item => item.category === selectedCategory);
 
   if (loading) {
     return (

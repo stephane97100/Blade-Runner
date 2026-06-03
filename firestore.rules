@@ -42,5 +42,15 @@ service cloud.firestore {
       allow create: if isValidId(sessionId) && isValidVKSession(incoming());
       allow read: if true;
     }
+
+    match /gallery_items/{itemId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read: if true;
+      allow write: if true;
+    }
   }
 }
