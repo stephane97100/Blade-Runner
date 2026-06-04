@@ -1,8 +1,8 @@
 import { AnimatePresence } from "motion/react";
-import { Eye, Film, Layers, BookOpen, Settings, Send, Users, Menu, X, Shield, HelpCircle, FastForward, Image, Newspaper, Gamepad2, Compass, Lock, Github } from "lucide-react";
+import { Eye, Film, Layers, BookOpen, Settings, Send, Users, Menu, X, Shield, HelpCircle, FastForward, Image, Newspaper, Gamepad2, Compass, Lock, Github, ShieldAlert, Music, Award } from "lucide-react";
 import WeatherWidget from "./WeatherWidget";
 
-export type NavTab = "film" | "galerie" | "versions" | "book" | "makingof" | "actors" | "devenus" | "suite" | "contact" | "vk" | "westwood" | "vehicules" | "actualites" | "admin";
+export type NavTab = "film" | "galerie" | "versions" | "book" | "makingof" | "actors" | "nexus6" | "devenus" | "suite" | "westwood" | "ost" | "vehicules" | "actualites" | "contact" | "vk" | "admin" | "quiz";
 
 interface NavigationProps {
   currentTab: NavTab;
@@ -20,14 +20,18 @@ export default function Navigation({ currentTab, setTab, mobileOpen, setMobileOp
     { id: "book", label: "Livre vs Film", icon: <BookOpen className="h-4 w-4" /> },
     { id: "makingof", label: "Le Tournage", icon: <Settings className="h-4 w-4" /> },
     { id: "actors", label: "Les Acteurs", icon: <Users className="h-4 w-4" /> },
+    { id: "nexus6", label: "Nexus-6 Replicants", icon: <ShieldAlert className="h-4 w-4" /> },
     { id: "devenus", label: "Que sont-ils devenus ?", icon: <HelpCircle className="h-4 w-4" /> },
     { id: "suite", label: "La Suite", icon: <FastForward className="h-4 w-4" /> },
     { id: "westwood", label: "Le Jeu Westwood", icon: <Gamepad2 className="h-4 w-4" /> },
+    { id: "quiz", label: "Quiz Interactif", icon: <Award className="h-4 w-4" /> },
+    { id: "ost", label: "Vangelis OST", icon: <Music className="h-4 w-4" /> },
     { id: "actualites", label: "Actualités", icon: <Newspaper className="h-4 w-4" /> },
     { id: "contact", label: "Dépôt de Contact", icon: <Send className="h-4 w-4" /> },
     { id: "vk", label: "Test Voight-Kampff", icon: <Eye className="h-4 w-4" /> },
     { id: "admin", label: "Console Administrateur", icon: <Lock className="h-4 w-4" /> }
   ] as const;
+
 
   return (
     <>

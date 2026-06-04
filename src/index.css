@@ -144,4 +144,101 @@
   filter: grayscale(1) contrast(1.4) brightness(0.8) sepia(0.08);
 }
 
+/* --- ADVANCED IMMERSIVE CYBER AUDIO-VISUAL ANIMATIONS --- */
+
+@keyframes pulse-neon-cyan {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 243, 255, 0.2), inset 0 0 5px rgba(0, 243, 255, 0.1); border-color: rgba(0, 243, 255, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(0, 243, 255, 0.55), inset 0 0 10px rgba(0, 243, 255, 0.2); border-color: rgba(0, 243, 255, 0.85); }
+}
+
+@keyframes pulse-neon-amber {
+  0%, 100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.2), inset 0 0 5px rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.55), inset 0 0 10px rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.85); }
+}
+
+@keyframes horizontal-laser-sweep {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+@keyframes page-shutter-in {
+  0% { transform: scaleX(0); opacity: 0; filter: brightness(3); }
+  50% { transform: scaleX(1.02); opacity: 0.8; }
+  100% { transform: scaleX(1); opacity: 1; filter: brightness(1); }
+}
+
+@keyframes holographic-faze {
+  0%, 100% { opacity: 0.95; filter: hue-rotate(0deg); }
+  45% { opacity: 0.98; }
+  50% { opacity: 0.6; filter: hue-rotate(30deg) contrast(1.4); }
+  55% { opacity: 0.92; }
+}
+
+/* Immersive hover interaction classes */
+.cyber-interactive-card {
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cyber-interactive-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.12), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.cyber-interactive-card:hover::before {
+  animation: horizontal-laser-sweep 1.4s ease-in-out infinite;
+}
+
+.cyber-interactive-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: #00f3ff;
+  box-shadow: 0 0 22px rgba(0, 243, 255, 0.2);
+}
+
+.cyber-nav-item {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.22s ease-in-out;
+}
+
+.cyber-nav-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 3px; height: 0%;
+  background: #00f3ff;
+  transition: height 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.255);
+}
+
+.cyber-nav-item:hover::after,
+.cyber-nav-item-active::after {
+  height: 100%;
+}
+
+/* Page transit effects */
+.page-transit-animation {
+  animation: page-shutter-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center;
+}
+
+/* Holo glitches */
+.holo-faze-effect {
+  animation: holographic-faze 5s infinite;
+}
+
+.neon-glow-cyan {
+  animation: pulse-neon-cyan 3.5s infinite;
+}
+
+.neon-glow-amber {
+  animation: pulse-neon-amber 3.5s infinite;
+}
+
+
 

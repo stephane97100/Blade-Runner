@@ -7,6 +7,8 @@ import VersionsView from "./components/VersionsView";
 import BookVsMovieView from "./components/BookVsMovieView";
 import MakingOfView from "./components/MakingOfView";
 import ActorsView from "./components/ActorsView";
+import Nexus6View from "./components/Nexus6View";
+import OSTView from "./components/OSTView";
 import ContactView from "./components/ContactView";
 import VoightKampffView from "./components/VoightKampffView";
 import DevenusView from "./components/DevenusView";
@@ -14,9 +16,12 @@ import SuiteView from "./components/SuiteView";
 import NewsView from "./components/NewsView";
 import VehiclesView from "./components/VehiclesView";
 import WestwoodView from "./components/WestwoodView";
+import QuizView from "./components/QuizView";
 import DiagnosticConsole from "./components/DiagnosticConsole";
 import AdminView from "./components/AdminView";
-import { Eye, Shield, Radio, Menu, Clock, Volume2, VolumeX, Music, SlidersHorizontal } from "lucide-react";
+import { Eye, Shield, Radio, Menu, Clock, Volume2, VolumeX, Music, SlidersHorizontal, Disc } from "lucide-react";
+import { VANGELIS_PLAYLIST, SoundtrackTrack } from "./types";
+
 
 export type FilterPreset = "standard" | "sepia" | "cyberpunk" | "vintage";
 
@@ -117,6 +122,107 @@ export default function App() {
   });
   const [ambientEnabled, setAmbientEnabled] = useState(false);
   const droneRef = useRef<AmbientDrone | null>(null);
+
+  // Vangelis global background soundtrack state (Defaulting to 30% or 0.3 volume!)
+  const [currentTrack, setCurrentTrack] = useState<SoundtrackTrack | null>(null);
+  const [isVangelisPlaying, setIsVangelisPlaying] = useState(false);
+  const [vangelisVolume, setVangelisVolume] = useState(0.3); // Explicitly 30%!
+  const vangelisAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // On first mount, select a random Vangelis track from playlist
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * VANGELIS_PLAYLIST.length);
+    setCurrentTrack(VANGELIS_PLAYLIST[randomIndex]);
+  }, []);
+
+  // Sync Vangelis background audio element with state controls
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    if (!vangelisAudioRef.current) {
+      vangelisAudioRef.current = new Audio();
+    }
+    
+    const audio = vangelisAudioRef.current;
+    audio.volume = vangelisVolume;
+
+    if (currentTrack) {
+      const currentSrc = audio.src;
+      const isDifferentUrl = !currentSrc || (!currentSrc.endsWith(encodeURI(currentTrack.url)) && !currentSrc.endsWith(currentTrack.url));
+      
+      if (isDifferentUrl) {
+        audio.src = currentTrack.url;
+        audio.load();
+      }
+
+      if (isVangelisPlaying) {
+        audio.play().catch(err => {
+          console.warn("L'autoplay audio de Vangelis a été suspendu par le navigateur (requiert une interaction utilisateur).", err);
+          setIsVangelisPlaying(false);
+        });
+      } else {
+        audio.pause();
+      }
+    }
+
+    // Autoplay sequence on finish
+    const handleNextOnEnded = () => {
+      const idx = VANGELIS_PLAYLIST.findIndex(t => t.title === currentTrack?.title);
+      const nextIdx = (idx + 1) % VANGELIS_PLAYLIST.length;
+      setCurrentTrack(VANGELIS_PLAYLIST[nextIdx]);
+      setIsVangelisPlaying(true);
+    };
+
+    audio.addEventListener("ended", handleNextOnEnded);
+    return () => {
+      audio.removeEventListener("ended", handleNextOnEnded);
+    };
+  }, [currentTrack, isVangelisPlaying]);
+
+  // Adjust volume when slide triggers
+  useEffect(() => {
+    if (vangelisAudioRef.current) {
+      vangelisAudioRef.current.volume = vangelisVolume;
+    }
+  }, [vangelisVolume]);
+
+  // Document-wide lightweight listener to catch initial user action and boot audio smoothly
+  useEffect(() => {
+    const handleGesture = () => {
+      // Pick random track & play if not yet did
+      if (vangelisAudioRef.current && vangelisAudioRef.current.paused && isVangelisPlaying) {
+        vangelisAudioRef.current.play().catch(() => {});
+      }
+    };
+    window.addEventListener("click", handleGesture, { once: true });
+    window.addEventListener("keydown", handleGesture, { once: true });
+    return () => {
+      window.removeEventListener("click", handleGesture);
+      window.removeEventListener("keydown", handleGesture);
+    };
+  }, [isVangelisPlaying]);
+
+  const handleToggleVangelis = () => {
+    const nextVal = !isVangelisPlaying;
+    setIsVangelisPlaying(nextVal);
+    playConfirmBeep(soundEnabled);
+  };
+
+  const handleNextVangelisTrack = () => {
+    if (!currentTrack) return;
+    const idx = VANGELIS_PLAYLIST.findIndex(t => t.title === currentTrack.title);
+    const nextIdx = (idx + 1) % VANGELIS_PLAYLIST.length;
+    setCurrentTrack(VANGELIS_PLAYLIST[nextIdx]);
+    setIsVangelisPlaying(true);
+    playConfirmBeep(soundEnabled);
+  };
+
+  const handleSelectVangelisTrack = (track: SoundtrackTrack) => {
+    setCurrentTrack(track);
+    setIsVangelisPlaying(true);
+    playConfirmBeep(soundEnabled);
+  };
+
   const [filterPreset, setFilterPreset] = useState<FilterPreset>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("bladeRunner_filterPreset");
@@ -228,6 +334,8 @@ export default function App() {
         return <MakingOfView />;
       case "actors":
         return <ActorsView />;
+      case "nexus6":
+        return <Nexus6View />;
       case "devenus":
         return <DevenusView />;
       case "suite":
@@ -236,6 +344,20 @@ export default function App() {
         return <VehiclesView />;
       case "westwood":
         return <WestwoodView />;
+      case "quiz":
+        return <QuizView />;
+      case "ost":
+        return (
+          <OSTView
+            currentTrack={currentTrack}
+            isPlaying={isVangelisPlaying}
+            volume={vangelisVolume}
+            onPlayPause={handleToggleVangelis}
+            onNextTrack={handleNextVangelisTrack}
+            onSelectTrack={handleSelectVangelisTrack}
+            onVolumeChange={setVangelisVolume}
+          />
+        );
       case "actualites":
         return <NewsView />;
       case "contact":
@@ -280,6 +402,14 @@ export default function App() {
               <Radio className="h-3.5 w-3.5 animate-pulse" />
               <span className="uppercase tracking-widest font-semibold text-[9px]">DIAGNOSTIC : COHÉRENCE OK</span>
             </div>
+            {isVangelisPlaying && currentTrack && (
+              <div className="flex items-center space-x-1.5 border-l border-gray-800 pl-6 text-pink-400 animate-pulse">
+                <Disc className="h-3.5 w-3.5 animate-spin [animation-duration:5s]" />
+                <span className="uppercase tracking-widest font-bold text-[9px] truncate max-w-[130px]">
+                  TRACK: {currentTrack.title}
+                </span>
+              </div>
+            )}
             <div className="flex items-center space-x-1.5 border-l border-gray-800 pl-6 text-gray-400">
               <Clock className="h-3.5 w-3.5 text-cyan-500/70" />
               <span>{systemTime}</span>
@@ -300,6 +430,20 @@ export default function App() {
             <span className="font-bold">
               {filterPresetsList.find(p => p.id === filterPreset)?.label}
             </span>
+          </button>
+
+          {/* Vangelis Soundtrack controller */}
+          <button
+            onClick={handleToggleVangelis}
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 border rounded-lg font-mono text-[9px] md:text-[10px] uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+              isVangelisPlaying
+                ? "bg-pink-950/40 border-pink-500/40 text-pink-400 shadow-[0_0_10px_rgba(236,72,153,0.15)] animate-pulse"
+                : "bg-gray-900 border-gray-800 text-gray-500 hover:text-gray-400 hover:border-gray-700"
+            }`}
+            title={isVangelisPlaying ? "Arrêter la musique de Vangelis" : "Activer la musique de Vangelis (30% de volume de l'album)"}
+          >
+            <Disc className={`h-3.5 w-3.5 ${isVangelisPlaying ? "text-pink-400 animate-spin [animation-duration:8s]" : "text-gray-500"}`} />
+            <span className="font-bold">{isVangelisPlaying ? "VANGELIS ON" : "VANGELIS OFF"}</span>
           </button>
 
           {/* Low-frequency ambient synth drone track sound controller */}
