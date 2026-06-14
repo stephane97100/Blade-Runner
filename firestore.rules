@@ -33,6 +33,52 @@ service cloud.firestore {
         && data.createdAt == request.time;
     }
 
+    function isValidDiscussion(data) {
+      return data.keys().hasAll(['id', 'username', 'title', 'content', 'createdAt'])
+        && data.keys().size() == 5
+        && data.id is string && data.id.size() <= 128
+        && data.username is string && data.username.size() >= 2 && data.username.size() <= 100
+        && data.title is string && data.title.size() >= 3 && data.title.size() <= 150
+        && data.content is string && data.content.size() >= 5 && data.content.size() <= 5000
+        && data.createdAt == request.time;
+    }
+
+    function isValidRating(data) {
+      return data.keys().hasAll(['id', 'targetId', 'targetType', 'rating', 'createdAt'])
+        && data.keys().size() == 5
+        && data.id is string && data.id.size() <= 128
+        && data.targetId is string && data.targetId.size() <= 128
+        && data.targetType is string && (data.targetType == 'character' || data.targetType == 'version')
+        && data.rating is number && data.rating >= 1 && data.rating <= 5
+        && data.createdAt == request.time;
+    }
+
+    function isValidActor(data) {
+      return data.keys().hasAll(['id', 'name', 'character', 'role', 'status', 'description', 'secretInfo', 'portraitUrl', 'archivalRepresentation', 'keyQuote', 'coordinates'])
+        && data.keys().size() == 11
+        && data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 150
+        && data.character is string && data.character.size() <= 150
+        && data.role is string && data.role.size() <= 150
+        && data.status is string && (data.status == 'Humain' || data.status == 'Réplicant' || data.status == 'Inconnu')
+        && data.description is string && data.description.size() <= 5000
+        && data.secretInfo is string && data.secretInfo.size() <= 5000
+        && data.portraitUrl is string && data.portraitUrl.size() <= 2000
+        && data.archivalRepresentation is string && data.archivalRepresentation.size() <= 2000
+        && data.keyQuote is string && data.keyQuote.size() <= 1000
+        && data.coordinates is map;
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasAll(['id', 'pageId', 'author', 'content', 'createdAt'])
+        && data.keys().size() == 5
+        && data.id is string && data.id.size() <= 128
+        && data.pageId is string && (data.pageId == 'film' || data.pageId == 'versions' || data.pageId == 'book')
+        && data.author is string && data.author.size() >= 2 && data.author.size() <= 100
+        && data.content is string && data.content.size() >= 2 && data.content.size() <= 2000
+        && data.createdAt == request.time;
+    }
+
     match /contact_submissions/{submissionId} {
       allow create: if isValidId(submissionId) && isValidContactSubmission(incoming());
       allow read: if true;
@@ -51,6 +97,26 @@ service cloud.firestore {
     match /vehicles/{vehicleId} {
       allow read: if true;
       allow write: if true;
+    }
+
+    match /news_discussions/{discussionId} {
+      allow create: if isValidId(discussionId) && isValidDiscussion(incoming());
+      allow read: if true;
+    }
+
+    match /ratings/{ratingId} {
+      allow create, update: if isValidId(ratingId) && isValidRating(incoming());
+      allow read: if true;
+    }
+
+    match /actors/{actorId} {
+      allow create, update: if isValidId(actorId) && isValidActor(incoming());
+      allow read: if true;
+    }
+
+    match /page_comments/{commentId} {
+      allow create: if isValidId(commentId) && isValidComment(incoming());
+      allow read: if true;
     }
   }
 }

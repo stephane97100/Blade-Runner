@@ -58,6 +58,64 @@
         "specs": { "type": "object" }
       },
       "required": ["id", "name", "category", "description", "lore", "visualUrl", "specs"]
+    },
+    "Discussion": {
+      "title": "Discussion",
+      "description": "Une discussion ouverte sur l'univers de Blade Runner",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "username", "title", "content", "createdAt"]
+    },
+    "Rating": {
+      "title": "Rating",
+      "description": "Une note de 1 à 5 étoiles sur un élément",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "targetId": { "type": "string" },
+        "targetType": { "type": "string" },
+        "rating": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "targetId", "targetType", "rating", "createdAt"]
+    },
+    "Actor": {
+      "title": "Actor",
+      "description": "Fiche de personnage et acteur de Blade Runner",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "character": { "type": "string" },
+        "role": { "type": "string" },
+        "status": { "type": "string", "enum": ["Humain", "Réplicant", "Inconnu"] },
+        "description": { "type": "string" },
+        "secretInfo": { "type": "string" },
+        "portraitUrl": { "type": "string" },
+        "archivalRepresentation": { "type": "string" },
+        "keyQuote": { "type": "string" },
+        "coordinates": { "type": "object" }
+      },
+      "required": ["id", "name", "character", "role", "status", "description", "secretInfo", "portraitUrl", "archivalRepresentation", "keyQuote", "coordinates"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Un commentaire laissé par un utilisateur sur l'une des pages principales",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "pageId": { "type": "string" },
+        "author": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "pageId", "author", "content", "createdAt"]
     }
   },
   "firestore": {
@@ -76,6 +134,22 @@
     "vehicles/{vehicleId}": {
       "schema": "Vehicle",
       "description": "Spécifications de véhicules"
+    },
+    "news_discussions/{discussionId}": {
+      "schema": "Discussion",
+      "description": "Les discussions publiques de l'Hôtel Bradbury"
+    },
+    "ratings/{ratingId}": {
+      "schema": "Rating",
+      "description": "Les notations de personnages ou versions"
+    },
+    "actors/{actorId}": {
+      "schema": "Actor",
+      "description": "Fiches des acteurs et personnages"
+    },
+    "page_comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Les commentaires pour chaque page principale (Le film, Versions, Livre)"
     }
   }
 }

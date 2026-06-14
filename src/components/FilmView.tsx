@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { Film, Eye, ShieldAlert, Zap, Globe, Sparkles, Camera } from "lucide-react";
 import InteractiveMap from "./InteractiveMap";
+import CommentsSection from "./CommentsSection";
 
 export default function FilmView() {
   const themes = [
@@ -160,6 +161,9 @@ export default function FilmView() {
 
       {/* Cartographie Interactives Speculative (Film et Jeu) */}
       <InteractiveMap />
+
+      {/* Commentaires de la page Le Film */}
+      <CommentsSection pageId="film" />
     </motion.div>
   );
 }

@@ -2,6 +2,30 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { bookDifferences } from "../data/bladeRunnerData";
 import { BookOpen, Film, RefreshCw, HelpCircle, Gamepad } from "lucide-react";
+import CommentsSection from "./CommentsSection";
+
+const differenceImages = [
+  {
+    url: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&q=80&w=1200",
+    desc: "L'abîme métaphysique du Mercerisme face au vide spirituel industriel de Los Angeles 2019."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=1200",
+    desc: "Le hibou factice et la faune artificielle de la Tyrell Corporation, symbole du statut d'empathie."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
+    desc: "Rick Deckard, le détective fatigué et désabusé, solitaire sous son trenchcoat anachronique."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&q=80&w=1200",
+    desc: "Les colonies Off-World et l'espoir d'exfiltration des androïdes en fin de cycle de vie."
+  },
+  {
+    url: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200",
+    desc: "Les ruelles d'Animoid Row submergées sous la pluie noire de novembre et les fumées de vapeur."
+  }
+];
 
 export default function BookVsMovieView() {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
@@ -31,13 +55,32 @@ export default function BookVsMovieView() {
             onMouseLeave={() => setHoveredIdx(null)}
             className="bg-gray-900/30 border border-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:border-cyan-500/20 hover:bg-gray-900/50"
           >
+            {/* Thematic archival banner illustration */}
+            <div className="w-full h-44 relative overflow-hidden border-b border-gray-800">
+              <img 
+                src={differenceImages[idx]?.url} 
+                alt={differenceImages[idx]?.desc} 
+                className="w-full h-full object-cover opacity-45 transition-transform duration-700 ease-out"
+                style={{
+                  transform: hoveredIdx === idx ? "scale(1.05) translateY(-2px)" : "scale(1) translateY(0)"
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"></div>
+              <div className="absolute bottom-3 left-4 right-4 flex justify-between items-end">
+                <span className="text-[10px] font-mono text-cyan-400 bg-black/75 px-2 py-1 rounded border border-cyan-500/10 uppercase tracking-widest">
+                  {differenceImages[idx]?.desc}
+                </span>
+                <span className="text-[9px] font-mono text-gray-500 uppercase hidden sm:block">Archive ID: LIB-FILM-00{idx + 1}</span>
+              </div>
+            </div>
+
             {/* Header Column banner */}
             <div className="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 px-6 py-3 border-b border-gray-800 flex justify-between items-center">
-              <span className="font-display text-sm font-bold tracking-widest text-cyan-400 uppercase">
+              <span className="font-display text-sm font-bold tracking-widest text-white uppercase">
                 {idx + 1}. {diff.topic}
               </span>
-              <span className="text-[10px] font-mono text-gray-500 tracking-wider">
-                DOSSIER DE CHIRURGIE THÉMATIQUE
+              <span className="text-[10px] font-mono text-cyan-500 font-bold tracking-wider">
+                RAPPORT SUR LA TRADUCTION DE L'UNIVERS
               </span>
             </div>
 
@@ -172,6 +215,9 @@ export default function BookVsMovieView() {
 
         </div>
       </div>
+
+      {/* Section Commentaires pour le Livre vs le Film */}
+      <CommentsSection pageId="book" />
     </motion.div>
   );
 }

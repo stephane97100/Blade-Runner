@@ -19,6 +19,7 @@ import WestwoodView from "./components/WestwoodView";
 import QuizView from "./components/QuizView";
 import DiagnosticConsole from "./components/DiagnosticConsole";
 import AdminView from "./components/AdminView";
+import NetworkSearch from "./components/NetworkSearch";
 import { Eye, Shield, Radio, Menu, Clock, Volume2, VolumeX, Music, SlidersHorizontal, Disc } from "lucide-react";
 import { VANGELIS_PLAYLIST, SoundtrackTrack } from "./types";
 
@@ -111,7 +112,17 @@ class AmbientDrone {
 
 export default function App() {
   const [currentTab, setTab] = useState<NavTab>("film");
+  const [searchSelectedActorId, setSearchSelectedActorId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleSearchNavigateTab = (tabId: string) => {
+    let mappedTab: NavTab = "film";
+    if (tabId === "acteurs") mappedTab = "actors";
+    else if (tabId === "versions") mappedTab = "versions";
+    else if (tabId === "livre_vs_film") mappedTab = "book";
+    else if (tabId === "tournage") mappedTab = "makingof";
+    setTab(mappedTab);
+  };
   const [systemTime, setSystemTime] = useState("");
   const [soundEnabled, setSoundEnabled] = useState(() => {
     if (typeof window !== "undefined") {
@@ -333,7 +344,12 @@ export default function App() {
       case "makingof":
         return <MakingOfView />;
       case "actors":
-        return <ActorsView />;
+        return (
+          <ActorsView
+            initialActorId={searchSelectedActorId}
+            onClearInitialActorId={() => setSearchSelectedActorId(null)}
+          />
+        );
       case "nexus6":
         return <Nexus6View />;
       case "devenus":
@@ -392,6 +408,11 @@ export default function App() {
               LAPD MAIN RESECTION
             </span>
           </div>
+        </div>
+
+        {/* Persistent Search Bar */}
+        <div className="hidden sm:block">
+          <NetworkSearch onSelectActor={setSearchSelectedActorId} onNavigateTab={handleSearchNavigateTab} />
         </div>
 
         {/* Right side container: Sound Toggle, Desktop Stats, and Mobile triggers */}
@@ -506,6 +527,11 @@ export default function App() {
         {/* Main interactive terminal dashboard box with built-in Diagnostic Console */}
         <main className="flex-grow p-6 md:p-8 lg:p-10 overflow-x-hidden min-w-0 flex flex-col justify-between space-y-6">
           <div className="flex-grow">
+            {/* Mobile Search Bar Row */}
+            <div className="block sm:hidden mb-6 w-full">
+              <NetworkSearch onSelectActor={setSearchSelectedActorId} onNavigateTab={handleSearchNavigateTab} />
+            </div>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentTab}

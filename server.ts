@@ -225,6 +225,74 @@ async function startServer() {
     }
   ];
 
+  const initialActorsList = [
+    {
+      id: "deckard",
+      name: "Harrison Ford",
+      character: "Rick Deckard",
+      role: "Blade Runner",
+      status: "Inconnu",
+      description: "Un flic chevronné, rappelé au service actif de la police de Los Angeles (LAPD) au département spécialisé dans le 'retrait' des réplicants rebelles. Las et froid, Deckard commence à s'interroger sur sa propre nature et son humanité au fur et à mesure de sa traque.",
+      secretInfo: "La question de savoir si Deckard est lui-même un réplicant Nexus-6 (ou Nexus-7 spécial) est le plus célèbre débat du cinéma de science-fiction. La coupe 'Final Cut' de Ridley Scott, montrant le rêve de la licorne et l'origami final laissé par Gaff, suggère fortement qu'il en est un.",
+      portraitUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600",
+      archivalRepresentation: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&q=80&w=1000",
+      keyQuote: "Je ne savais pas si j'avais des souvenirs d'elle, ou si ce n'étaient que des rêves...",
+      coordinates: { x: 342, y: 198, zoom: 4 }
+    },
+    {
+      id: "batty",
+      name: "Rutger Hauer",
+      character: "Roy Batty",
+      role: "Chef des Réplicants (Nexus-6)",
+      status: "Réplicant",
+      description: "Le leader charismatique et redoutable des réplicants évadés d'une colonie minière spatiale. Conçu pour le combat militaire, il possède une intelligence suprême, une force extrême et une conscience aiguë de sa date de péremption imminente.",
+      secretInfo: "Rutger Hauer a lui-même improvisé la célèbre phrase 'All those moments will be lost in time, like tears in rain' juste avant le tournage de sa scène de mort face à Deckard, touchant profondément l'équipe technique.",
+      portraitUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600",
+      archivalRepresentation: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=1000",
+      keyQuote: "J'ai vu tant de choses que vous, humains, ne pourriez pas croire...",
+      coordinates: { x: 210, y: 154, zoom: 3.5 }
+    },
+    {
+      id: "rachael",
+      name: "Sean Young",
+      character: "Rachael",
+      role: "Secrétaire de Tyrell / Prototype spécial",
+      status: "Réplicant",
+      description: "Un prototype de réplicant Nexus-6 d'un genre nouveau, doté de souvenirs implantés issus de la nièce du Dr. Eldon Tyrell pour stabiliser ses émotions. Elle se croit humaine jusqu'à ce que Deckard lui fasse passer le test de Voight-Kampff.",
+      secretInfo: "Rachael possède un code d'identification secret qui n'inclut pas de date de péremption prédéfinie de 4 ans, à la différence des autres Nexus-6, faisant d'elle un être unique capable de ressentir de réelles émotions durables.",
+      portraitUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600",
+      archivalRepresentation: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000",
+      keyQuote: "Est-ce qu'on vous a déjà fait passer ce test, à vous ?",
+      coordinates: { x: 450, y: 220, zoom: 4.5 }
+    },
+    {
+      id: "pris",
+      name: "Daryl Hannah",
+      character: "Pris Stratton",
+      role: "Modèle de plaisir / Réplicante révoltée",
+      status: "Réplicant",
+      description: "Une réplicanteNexus-6 qualifiée de 'modèle de plaisir basique pour le personnel militaire'. Compagne de Roy Batty, elle s'infiltre chez l'ingénieur en robotique J.F. Sebastian en profitant de sa naïveté et de sa solitude.",
+      secretInfo: "Daryl Hannah a exécuté elle-même plusieurs acrobaties complexes durant la scène de combat acrobatique finale avec Deckard dans l'appartement de Sebastian, impressionnant Ridley Scott.",
+      portraitUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600",
+      archivalRepresentation: "https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&q=80&w=1000",
+      keyQuote: "Je pense, donc je suis.",
+      coordinates: { x: 180, y: 280, zoom: 3 }
+    },
+    {
+      id: "gaff",
+      name: "Edward James Olmos",
+      character: "Gaff",
+      role: "Inspecteur de police LAPD",
+      status: "Humain",
+      description: "Un mystérieux policier polyglotte qui s'exprime en argot de la rue ('Cityspeak'). Il escorte Deckard tout au long de sa mission et passe son temps à plier des origamis prémonitoires en papier (poule, bonhomme en érection, licorne).",
+      secretInfo: "L'origami de licorne laissé par Gaff à la fin du film prouve qu'il connaissait les rêves intimes de Deckard, ce qui démontre implicitement que Deckard est un réplicant doté de rêves synthétiques surveillés par la police.",
+      portraitUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600",
+      archivalRepresentation: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1000",
+      keyQuote: "C'est dommage qu'elle doive mourir... mais qui n'en est pas là ?",
+      coordinates: { x: 520, y: 130, zoom: 5 }
+    }
+  ];
+
   const initialVehiclesList = [
     {
       id: "lapd-spinner",
@@ -397,6 +465,27 @@ async function startServer() {
     } catch (err: any) {
       console.error("[Vehicles GET error]", err);
       res.json({ success: true, items: initialVehiclesList, note: "Loaded from local memory due to firestore status" });
+    }
+  });
+
+  // GET Actors
+  app.get("/api/actors", async (req, res) => {
+    try {
+      const q = collection(db, "actors");
+      const snap = await getDocs(q);
+      let items = snap.docs.map(doc => doc.data());
+
+      if (items.length === 0) {
+        console.log("[Firestore] Seeding initial actors...");
+        for (const item of initialActorsList) {
+          await setDoc(doc(db, "actors", item.id), item);
+        }
+        items = initialActorsList;
+      }
+      res.json({ success: true, items });
+    } catch (err: any) {
+      console.error("[Actors GET error]", err);
+      res.json({ success: true, items: initialActorsList, note: "Loaded from local memory due to firestore status" });
     }
   });
 
@@ -712,6 +801,307 @@ Tu dois répondre impérativement sous forme de JSON valide avec exactement ces 
     } catch (err: any) {
       console.error("[History GET error]", err);
       res.json({ success: false, items: [], error: err.message });
+    }
+  });
+
+  // API 4: GET discussions
+  app.get("/api/discussions", async (req, res) => {
+    try {
+      const q = collection(db, "news_discussions");
+      const snap = await getDocs(q);
+      let list = snap.docs.map(doc => {
+        const data = doc.data();
+        let timestamp = data.createdAt;
+        if (timestamp && typeof timestamp.toDate === "function") {
+          timestamp = timestamp.toDate().toISOString();
+        } else if (timestamp && timestamp._seconds) {
+          timestamp = new Date(timestamp._seconds * 1000).toISOString();
+        } else {
+          timestamp = new Date().toISOString();
+        }
+        return {
+          id: doc.id,
+          username: data.username,
+          title: data.title,
+          content: data.content,
+          createdAt: timestamp
+        };
+      });
+
+      if (list.length === 0) {
+        console.log("[Firestore] Seeding initial discussions...");
+        const initialDiscussions = [
+          {
+            id: "disc-1",
+            username: "K_Nexus9",
+            title: "Le dilemme de la Licorne : Deckard est-il réplicant ?",
+            content: "Camarades Blade Runners, après avoir revisionné le Final Cut, l'origami de licorne de Gaff me semble être la preuve définitive. Si Gaff connaît le rêve le plus secret de Deckard (la licorne), c'est que ce rêve a été implanté. Qu'en pensez-vous ? Deckard est-il l'un des nôtres, ou un simple agent biologique zélé du LAPD ?",
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: "disc-2",
+            username: "Rachael_Prototype",
+            title: "Les Larmes dans la Pluie : poésie vs biologie",
+            content: "La tirade finale de Roy Batty montre un niveau de conscience existentielle et de poésie que même la plupart des humains biologiques n'atteignent jamais de leur vivant. Le scénario a-t-il voulu prouver que les créations synthétiques dépassent leurs créateurs de la Tyrell en termes d'humanité ?",
+            createdAt: new Date(Date.now() - 3600000 * 4).toISOString()
+          },
+          {
+            id: "disc-3",
+            username: "Luv_Ex",
+            title: "Blade Runner 2099 : à quoi s'attendre ?",
+            content: "La future série live se déroulera à Prague 50 ans après la quête de K dans 2049. Pensez-vous qu'on y retrouvera les thématiques transhumanistes fondamentales, ou risquons-nous d'assister à de la simple action cyberpunk d'infiltration ?",
+            createdAt: new Date(Date.now() - 3600000 * 12).toISOString()
+          }
+        ];
+
+        for (const disc of initialDiscussions) {
+          await setDoc(doc(db, "news_discussions", disc.id), {
+            id: disc.id,
+            username: disc.username,
+            title: disc.title,
+            content: disc.content,
+            createdAt: serverTimestamp()
+          });
+        }
+        list = initialDiscussions;
+      }
+
+      // Sort newest first
+      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      res.json({ success: true, discussions: list });
+    } catch (err: any) {
+      console.error("[Discussions GET error]", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // API 5: POST discussions
+  app.post("/api/discussions", async (req, res) => {
+    try {
+      const { username, title, content } = req.body;
+      if (!username || !title || !content) {
+        return res.status(400).json({ success: false, error: "Tous les champs (nom d'utilisateur, titre, contenu) sont obligatoires." });
+      }
+
+      if (username.length < 2 || username.length > 100 || title.length < 3 || title.length > 150 || content.length < 5 || content.length > 5000) {
+        return res.status(400).json({ success: false, error: "Validation échouée. Taille des textes incorrecte." });
+      }
+
+      const id = "disc_" + Math.random().toString(36).substring(2, 12);
+      await setDoc(doc(db, "news_discussions", id), {
+        id,
+        username,
+        title,
+        content,
+        createdAt: serverTimestamp()
+      });
+
+      console.log(`[Firestore] Nouvelle discussion créée ID: ${id}`);
+      res.json({ success: true, id });
+    } catch (err: any) {
+      console.error("[Discussions POST error]", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  const initialCommentsList = [
+    {
+      id: "comm-1",
+      pageId: "film",
+      author: "Tyrell_Corp",
+      content: "Un chef-d'œuvre absolu de Ridley Scott. La scène d'entrée de Los Angeles en 2019 redéfinit la direction artistique au cinéma.",
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "comm-2",
+      pageId: "film",
+      author: "Gaff_Origami",
+      content: "Avez-vous remarqué comment le thème de la culpabilité traverse chaque tirade ? Et cette musique de Vangelis...",
+      createdAt: new Date(Date.now() - 3600000 * 2).toISOString()
+    },
+    {
+      id: "comm-3",
+      pageId: "versions",
+      author: "Deckard_Ref",
+      content: "Pour moi, le 'Final Cut' de 2007 est la seule et unique version définitive. Sans la voix off intrusive ni la fin heureuse imposée.",
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "comm-4",
+      pageId: "versions",
+      author: "Roy_Batty_Jr",
+      content: "Le Director's Cut de 1992 a posé les bases de l'ambiguïté avec le rêve de la licorne. Même s'il manque quelques retouches numériques de 2007.",
+      createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
+    },
+    {
+      id: "comm-5",
+      pageId: "book",
+      author: "K_Android",
+      content: "La boîte à empathie (Mercerisme) et la bête électrique manquent cruellement au film, mais le film gagne en ambiance visuelle sombre.",
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "comm-6",
+      pageId: "book",
+      author: "Isidore_99",
+      content: "Le personnage de J.F. Sebastian est tellement plus complexe sous les traits de J.R. Isidore dans le livre, un 'spécial' isolé intellectuellement.",
+      createdAt: new Date(Date.now() - 3600000 * 10).toISOString()
+    }
+  ];
+
+  // API 5b: GET comments by pageId
+  app.get("/api/comments", async (req, res) => {
+    try {
+      const { pageId } = req.query;
+      if (!pageId) {
+        return res.status(400).json({ success: false, error: "Le paramètre pageId est obligatoire." });
+      }
+
+      const q = collection(db, "page_comments");
+      const snap = await getDocs(q);
+      let list = snap.docs.map(doc => {
+        const data = doc.data();
+        let timestamp = data.createdAt;
+        if (timestamp && typeof timestamp.toDate === "function") {
+          timestamp = timestamp.toDate().toISOString();
+        } else if (timestamp && timestamp._seconds) {
+          timestamp = new Date(timestamp._seconds * 1000).toISOString();
+        } else {
+          timestamp = new Date().toISOString();
+        }
+        return {
+          id: doc.id,
+          pageId: data.pageId,
+          author: data.author,
+          content: data.content,
+          createdAt: timestamp
+        };
+      });
+
+      // Filter by pageId
+      let filtered = list.filter(item => item.pageId === pageId);
+
+      // If no comments exist in firestore at all, seed initial ones
+      if (list.length === 0) {
+        console.log("[Firestore] Seeding initial page comments...");
+        for (const comm of initialCommentsList) {
+          await setDoc(doc(db, "page_comments", comm.id), {
+            id: comm.id,
+            pageId: comm.pageId,
+            author: comm.author,
+            content: comm.content,
+            createdAt: serverTimestamp()
+          });
+        }
+        filtered = initialCommentsList.filter(item => item.pageId === pageId);
+      }
+
+      // Sort comments oldest first (chronological thread)
+      filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+      res.json({ success: true, comments: filtered });
+    } catch (err: any) {
+      console.error("[Comments GET error]", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // API 5c: POST comments
+  app.post("/api/comments", async (req, res) => {
+    try {
+      const { pageId, author, content } = req.body;
+      if (!pageId || !author || !content) {
+        return res.status(400).json({ success: false, error: "Tous les champs (pageId, auteur, contenu) sont obligatoires." });
+      }
+
+      if (pageId !== "film" && pageId !== "versions" && pageId !== "book") {
+        return res.status(400).json({ success: false, error: "pageId invalide (valeurs autorisées : film, versions, book)." });
+      }
+
+      if (author.length < 2 || author.length > 100 || content.length < 2 || content.length > 2000) {
+        return res.status(400).json({ success: false, error: "Validation échouée. Taille des textes incorrecte." });
+      }
+
+      const id = "comm_" + Math.random().toString(36).substring(2, 12);
+      await setDoc(doc(db, "page_comments", id), {
+        id,
+        pageId,
+        author,
+        content,
+        createdAt: serverTimestamp()
+      });
+
+      console.log(`[Firestore] Nouveau commentaire créé ID: ${id} pour page: ${pageId}`);
+      res.json({ success: true, id });
+    } catch (err: any) {
+      console.error("[Comments POST error]", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // API 6: GET ratings (averages)
+  app.get("/api/ratings", async (req, res) => {
+    try {
+      const snap = await getDocs(collection(db, "ratings"));
+      const aggregates: { [key: string]: { sum: number, count: number } } = {};
+
+      snap.docs.forEach(dDoc => {
+        const data = dDoc.data();
+        const targetId = data.targetId;
+        const rating = Number(data.rating);
+
+        if (targetId && !isNaN(rating)) {
+          if (!aggregates[targetId]) {
+            aggregates[targetId] = { sum: 0, count: 0 };
+          }
+          aggregates[targetId].sum += rating;
+          aggregates[targetId].count += 1;
+        }
+      });
+
+      const ratings: { [key: string]: { average: number, count: number } } = {};
+      Object.keys(aggregates).forEach(targetId => {
+        const item = aggregates[targetId];
+        ratings[targetId] = {
+          average: Number((item.sum / item.count).toFixed(1)),
+          count: item.count
+        };
+      });
+
+      res.json({ success: true, ratings });
+    } catch (err: any) {
+      console.error("[Ratings GET error]", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // API 7: POST rating (1 to 5)
+  app.post("/api/ratings", async (req, res) => {
+    try {
+      const { targetId, targetType, rating, userId } = req.body;
+      if (!targetId || !targetType || !rating || !userId) {
+        return res.status(400).json({ success: false, error: "Tous les champs de notation sont indispensables." });
+      }
+
+      const rateVal = Number(rating);
+      if (isNaN(rateVal) || rateVal < 1 || rateVal > 5) {
+        return res.status(400).json({ success: false, error: "La note doit se situer impérativement entre 1 et 5." });
+      }
+
+      const id = `${userId}_${targetId}`;
+      await setDoc(doc(db, "ratings", id), {
+        id,
+        targetId,
+        targetType,
+        rating: rateVal,
+        createdAt: serverTimestamp()
+      });
+
+      console.log(`[Firestore] Notation enregistrée pour ${targetId} par ${userId} : ${rateVal} étoiles`);
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("[Ratings POST error]", err);
+      res.status(500).json({ success: false, error: err.message });
     }
   });
 

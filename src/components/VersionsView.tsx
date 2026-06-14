@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { filmVersions } from "../data/bladeRunnerData";
-import { Film, CheckCircle, HelpCircle, Flame } from "lucide-react";
+import { Film, CheckCircle, Flame, Star, StarOff } from "lucide-react";
+import CommentsSection from "./CommentsSection";
 
 const versionImages: Record<string, { url: string; label: string }> = {
   workprint: {
@@ -29,6 +30,76 @@ const versionImages: Record<string, { url: string; label: string }> = {
 export default function VersionsView() {
   const [selectedId, setSelectedId] = useState(filmVersions[4].id); // Default to Final Cut
 
+  // Sound capability
+  const playBeep = () => {
+    try {
+      if (typeof window !== "undefined" && localStorage.getItem("bladeRunner_soundEnabled") === "false") return;
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      gain.gain.setValueAtTime(0.015, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.08);
+    } catch (_) {}
+  };
+
+  // State hooks for ratings
+  const [allRatings, setAllRatings] = useState<{ [key: string]: { average: number; count: number } }>({});
+  const [userId, setUserId] = useState("");
+  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+
+  const fetchRatings = async () => {
+    try {
+      const response = await fetch("/api/ratings");
+      const data = await response.json();
+      if (data.success && data.ratings) {
+        setAllRatings(data.ratings);
+      }
+    } catch (err) {
+      console.error("[VersionsView] Error fetching ratings:", err);
+    }
+  };
+
+  useEffect(() => {
+    let uId = localStorage.getItem("bladeRunner_userId");
+    if (!uId) {
+      uId = "user_" + Math.random().toString(36).substring(2, 12);
+      localStorage.setItem("bladeRunner_userId", uId);
+    }
+    setUserId(uId);
+    fetchRatings();
+  }, []);
+
+  const handleRatingSubmit = async (versionId: string, ratingValue: number) => {
+    if (!userId) return;
+    try {
+      playBeep();
+      const response = await fetch("/api/ratings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetId: versionId,
+          targetType: "version",
+          rating: ratingValue,
+          userId
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        await fetchRatings();
+      }
+    } catch (err) {
+      console.error("[VersionsView] Error casting rating:", err);
+    }
+  };
+
   const selectedVersion = filmVersions.find((v) => v.id === selectedId) || filmVersions[4];
 
   return (
@@ -39,27 +110,31 @@ export default function VersionsView() {
       transition={{ duration: 0.5 }}
       className="space-y-8"
     >
-      <div>
-        <h1 className="text-2xl md:text-3xl font-display font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase">
+      <div className="text-left border-b border-gray-900 pb-4">
+        <h1 className="text-2xl md:text-3xl font-display font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase leading-none">
           LES VERSIONS DU FILM
         </h1>
         <p className="text-gray-400 text-sm mt-1">
-          L'histoire mouvementée de la production a donné naissance à 5 versions distinctes. Découvrez ce qui les différencie.
+          L'histoire mouvementée de la production de Ridley Scott a donné naissance à 5 versions distinctes. Donnez votre avis et notez-les.
         </p>
       </div>
 
       {/* Grid selector + detail layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Sidebar Selector (cols: 4) */}
+        {/* Sidebar Selector (cols: 5) */}
         <div className="lg:col-span-5 space-y-3">
           {filmVersions.map((version) => {
             const isSelected = version.id === selectedId;
+            const rates = allRatings[version.id] || { average: 0, count: 0 };
             return (
               <button
                 key={version.id}
-                onClick={() => setSelectedId(version.id)}
-                className={`w-full text-left p-4 rounded-xl border transition-all duration-300 flex items-start space-x-3 group relative overflow-hidden ${
+                onClick={() => {
+                  playBeep();
+                  setSelectedId(version.id);
+                }}
+                className={`w-full text-left p-4 rounded-xl border transition-all duration-300 flex items-start space-x-3 group relative overflow-hidden cursor-pointer ${
                   isSelected
                     ? "bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-gray-900 border-cyan-500/80 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
                     : "bg-gray-900/30 border-gray-800 hover:border-cyan-500/30 hover:bg-gray-900/60"
@@ -72,16 +147,24 @@ export default function VersionsView() {
                 
                 <Film className={`h-5 w-5 mt-0.5 shrink-0 transition-colors ${isSelected ? "text-cyan-400" : "text-gray-400 group-hover:text-cyan-300"}`} />
                 
-                <div className="space-y-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-mono px-2 py-0.5 rounded bg-gray-950/80 border border-gray-800 text-gray-400">
-                      {version.year}
-                    </span>
-                    <span className="text-xs font-mono text-gray-500">
-                      {version.duration}
-                    </span>
+                <div className="space-y-1.5 w-full">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-gray-950/80 border border-gray-850 text-gray-400">
+                        {version.year}
+                      </span>
+                      <span className="text-xs font-mono text-gray-500">
+                        {version.duration}
+                      </span>
+                    </div>
+
+                    {/* Mini rating indicator on sidebar */}
+                    <div className="flex items-center space-x-1 font-mono text-[9px] text-cyan-450">
+                      <Star className={`h-3 w-3 ${rates.count > 0 ? "fill-cyan-400 text-cyan-455" : "text-gray-700"}`} />
+                      <span>{rates.count > 0 ? rates.average : "—"}</span>
+                    </div>
                   </div>
-                  <h3 className={`text-sm font-semibold font-display tracking-wide transition-colors ${isSelected ? "text-white" : "text-gray-300 group-hover:text-white"}`}>
+                  <h3 className={`text-xs md:text-sm font-semibold font-display tracking-wide transition-colors ${isSelected ? "text-white" : "text-gray-300 group-hover:text-white"}`}>
                     {version.title}
                   </h3>
                 </div>
@@ -106,18 +189,47 @@ export default function VersionsView() {
 
               <div className="space-y-6">
                 {/* Header info */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-800 pb-4 gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-800 pb-4 gap-4 text-left">
                   <div>
-                    <h2 className="text-xl font-display font-bold text-white tracking-widest">
+                    <h2 className="text-lg md:text-xl font-display font-bold text-white tracking-widest uppercase">
                       {selectedVersion.title}
                     </h2>
                     <span className="text-xs font-mono text-cyan-400 mt-1 block">
-                      PROJECTION : {selectedVersion.year} • DURÉE DE RETRAIT : {selectedVersion.duration}
+                      PROJECTION : {selectedVersion.year} • DURÉE : {selectedVersion.duration}
                     </span>
                   </div>
                   <div className="bg-cyan-950/60 border border-cyan-400/40 px-3 py-1 rounded text-center shrink-0">
-                    <span className="block text-[9px] uppercase font-mono tracking-widest text-cyan-400">Système de vol</span>
-                    <span className="text-xs font-display font-semibold text-white">RESTAURATION OK</span>
+                    <span className="block text-[9px] uppercase font-mono tracking-widest text-cyan-400 text-left md:text-center">NOTE DU RAPPORT</span>
+                    <span className="text-xs font-display font-semibold text-white">
+                      {allRatings[selectedVersion.id] ? `${allRatings[selectedVersion.id].average} / 5` : "SANS NOTE"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Star-Rating Interactivity Widget */}
+                <div className="p-4 bg-cyan-955/10 border border-cyan-500/15 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
+                  <div className="space-y-0.5">
+                    <strong className="block font-mono text-[9px] text-cyan-400 tracking-wider uppercase font-bold">ATTRIBUER UNE NOTE EXISTENTIELLE :</strong>
+                    <span className="text-[10px] text-gray-500 font-mono">
+                      {allRatings[selectedVersion.id]?.count || 0} avis collectés sur ce rapport de mission.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {[1, 2, 3, 4, 5].map((starVal) => {
+                      const isStarsGoldVal = hoveredStar !== null ? starVal <= hoveredStar : starVal <= (allRatings[selectedVersion.id]?.average || 0);
+                      return (
+                        <button
+                          key={starVal}
+                          type="button"
+                          onClick={() => handleRatingSubmit(selectedVersion.id, starVal)}
+                          onMouseEnter={() => setHoveredStar(starVal)}
+                          onMouseLeave={() => setHoveredStar(null)}
+                          className="p-1 hover:text-cyan-400 text-cyan-500/30 transition-colors cursor-pointer"
+                        >
+                          <Star className={`h-5 w-5 ${isStarsGoldVal ? "fill-cyan-400 text-cyan-300" : "text-gray-700"}`} />
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -130,24 +242,24 @@ export default function VersionsView() {
                     className="w-full h-full object-cover opacity-80"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"></div>
-                  <div className="absolute bottom-3 left-3 bg-black/80 border border-cyan-500/20 px-2 py-1 rounded text-[10px] font-mono text-cyan-400">
+                  <div className="absolute bottom-3 left-3 bg-black/80 border border-cyan-500/20 px-2 py-1 rounded text-[10px] font-mono text-cyan-400 text-left">
                     {versionImages[selectedVersion.id]?.label}
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-300 text-sm leading-relaxed">
+                <p className="text-gray-300 text-xs md:text-sm leading-relaxed text-left font-sans">
                   {selectedVersion.description}
                 </p>
 
                 {/* Differences */}
-                <div className="space-y-3">
-                  <span className="text-xs font-mono uppercase tracking-widest text-gray-400 block border-b border-gray-800/40 pb-1">
+                <div className="space-y-3 text-left">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-gray-400 block border-b border-gray-800/40 pb-1">
                     Différences Majeures détectées :
                   </span>
                   <ul className="space-y-2.5">
                     {selectedVersion.keyDifferences.map((diff, index) => (
-                      <li key={index} className="flex items-start space-x-2.5 text-xs text-gray-300">
+                      <li key={index} className="flex items-start space-x-2.5 text-xs text-gray-300 font-sans">
                         <CheckCircle className="h-4 w-4 text-cyan-500 mt-0.5 shrink-0" />
                         <span>{diff}</span>
                       </li>
@@ -157,7 +269,7 @@ export default function VersionsView() {
               </div>
 
               {/* Bottom Significance/Legacy note */}
-              <div className="mt-8 pt-4 border-t border-gray-800/60 flex items-start space-x-3 bg-gray-950/40 p-4 rounded-lg border border-cyan-500/5">
+              <div className="mt-8 pt-4 border-t border-gray-800/60 flex items-start space-x-3 bg-gray-950/40 p-4 rounded-lg border border-cyan-500/5 text-left">
                 <Flame className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-yellow-500 block">IMPACT ET SIGNIFICATION HISTORIQUE :</span>
@@ -170,6 +282,9 @@ export default function VersionsView() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Section Commentaires pour les différentes versions */}
+      <CommentsSection pageId="versions" />
     </motion.div>
   );
 }
